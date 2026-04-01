@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+
+    /* Output */
+    "outDir": "build",
+    "declaration": true,
+    "noEmit": false,
+    "removeComments": true,
+    "composite": true,
+
+    /* Module Resolution */
+    "moduleResolution": "bundler",
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+
+    /* Build System */
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+
+    /* ECMAScript Compatibility */
+    "useDefineForClassFields": true,
+
+    /* Type Checking */
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Linting and Strictness Settings */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "noImplicitReturns": true,
+
+    /* JSX and React Settings*/
+    "jsx": "react-jsx",
+
+    /* Path Mappings*/
+    "paths": {
+      "@api/*": ["api/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "vite.config.ts",
+    "**/*.json"
+  ],
+  "exclude": ["node_modules", "build"]
+}

@@ -1,0 +1,3 @@
+echo "---- commitlint (commit-pattern: 'type(scope): subject') ----"
+yarn commitlint --edit "$1"
+
