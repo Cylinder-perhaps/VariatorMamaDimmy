@@ -1,36 +1,37 @@
-import { fileURLToPath } from "url";
+import { fileURLToPath } from 'url';
 
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv } from 'vite';
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
+  const env = loadEnv(mode, process.cwd(), '');
 
   return {
-    base: "/",
+    base: '/',
     plugins: [],
     server: {
-      host: "localhost",
+      host: 'localhost',
       port: 3000,
       open: true,
       cors: true,
     },
     preview: {
-      host: "localhost",
+      host: 'localhost',
       port: 3000,
       open: true,
     },
     build: {
       cssCodeSplit: false,
-      target: "esnext",
+      target: 'esnext',
       modulePreload: false,
-      outDir: "build",
-      assetsDir: "",
+      outDir: 'build',
+      assetsDir: '',
     },
     resolve: {
       alias: [
         {
-          find: "@api",
-          replacement: fileURLToPath(new URL("./src/api", import.meta.url)),
+          find: '@api',
+          replacement: fileURLToPath(new URL('./src/api', import.meta.url)),
         },
       ],
     },

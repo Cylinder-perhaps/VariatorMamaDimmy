@@ -48,6 +48,6 @@
     "src/**/*",
     "vite.config.ts",
     "**/*.json"
-  ],
+, "build-tokens.js"  ],
   "exclude": ["node_modules", "build"]
 }
