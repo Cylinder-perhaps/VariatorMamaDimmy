@@ -6,7 +6,7 @@ import { useOrdersStore } from '@entities/order/model/store';
 import { useAuthStore } from '@entities/user/model/store';
 import { adminApi } from '@shared/api';
 import { formatCurrency, formatDate, formatRelativeTime } from '@shared/lib/format';
-import { Badge, Button, Card, Input, ProgressBar, Spinner, marketStatusVariant, toast } from '@shared/ui';
+import { Badge, Button, Card, Input, Spinner, marketStatusVariant, toast } from '@shared/ui';
 
 import styles from './MarketPage.module.css';
 
@@ -50,10 +50,8 @@ export const MarketPage = () => {
     );
   }
 
-  const hashCode = currentMarket.id.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  const yesPercent = (hashCode % 80) + 10;
-  const noPercent = 100 - yesPercent;
-  const price = selectedOutcome.toLowerCase() === 'yes' ? yesPercent / 100 : noPercent / 100;
+  // Цена для MVP считается как 1 / количество исходов
+  const price = currentMarket.outcomes.length > 0 ? 1 / currentMarket.outcomes.length : 0.5;
   const qty = parseInt(quantity) || 0;
   const cost = qty * price;
   const potentialProfit = qty * (1 - price);
@@ -124,24 +122,7 @@ export const MarketPage = () => {
       <div className={styles.content}>
         {/* Left: Probability + Details */}
         <div>
-          <div className={styles.probSection}>
-            <h2 className={styles.probTitle}>Вероятность</h2>
-            <div className={styles.probCards}>
-              <Card compact>
-                <div className={styles.probCard}>
-                  <div className={`${styles.probPercent} ${styles.probYes}`}>{yesPercent}%</div>
-                  <div className={styles.probLabel}>Да</div>
-                </div>
-              </Card>
-              <Card compact>
-                <div className={styles.probCard}>
-                  <div className={`${styles.probPercent} ${styles.probNo}`}>{noPercent}%</div>
-                  <div className={styles.probLabel}>Нет</div>
-                </div>
-              </Card>
-            </div>
-            <ProgressBar yesPercent={yesPercent} size="lg" />
-          </div>
+          {/* Место для будущего графика цен */}
         </div>
 
         {/* Right: Trade Panel */}

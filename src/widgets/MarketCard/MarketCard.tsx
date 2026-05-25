@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { formatRelativeTime } from '@shared/lib/format';
 import type { Market } from '@shared/types';
-import { Badge, Card, ProgressBar, marketStatusVariant } from '@shared/ui';
+import { Badge, Card, marketStatusVariant } from '@shared/ui';
 
 import styles from './MarketCard.module.css';
 
@@ -12,10 +12,6 @@ interface MarketCardProps {
 
 export const MarketCard = ({ market }: MarketCardProps) => {
   const navigate = useNavigate();
-
-  // Для демо — используем случайную вероятность на основе id
-  const hashCode = market.id.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  const yesPercent = (hashCode % 80) + 10; // 10-90%
 
   return (
     <Card hoverable className={styles.card} onClick={() => navigate(`/markets/${market.id}`)}>
@@ -30,9 +26,6 @@ export const MarketCard = ({ market }: MarketCardProps) => {
         <p className={styles.description}>{market.description}</p>
       )}
 
-      <div className={styles.progress}>
-        <ProgressBar yesPercent={yesPercent} />
-      </div>
 
       <div className={styles.footer}>
         <span className={styles.deadline}>
