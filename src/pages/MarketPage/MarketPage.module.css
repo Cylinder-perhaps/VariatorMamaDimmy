@@ -164,6 +164,16 @@
   to { opacity: 1; }
 }
 
+.resolvedBanner {
+  background: var(--color-success);
+  color: white;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-3);
+  text-align: center;
+  font-size: var(--font-size-lg);
+}
+
 /* Admin Resolve */
 .resolveCard {
   margin-top: var(--space-4);

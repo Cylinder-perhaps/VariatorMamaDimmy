@@ -39,11 +39,17 @@ export const MarketCard = ({ market }: MarketCardProps) => {
           ⏰ {formatRelativeTime(market.deadline)}
         </span>
         <div className={styles.outcomes}>
-          {market.outcomes.map((outcome) => (
-            <Badge key={outcome} variant={outcome.toLowerCase() === 'yes' ? 'yes' : 'no'}>
-              {outcome}
+          {market.status === 'RESOLVED' && market.resolved_outcome ? (
+            <Badge variant={market.resolved_outcome.toLowerCase() === 'yes' ? 'yes' : 'no'}>
+              🏆 Победитель: {market.resolved_outcome}
             </Badge>
-          ))}
+          ) : (
+            market.outcomes.map((outcome) => (
+              <Badge key={outcome} variant={outcome.toLowerCase() === 'yes' ? 'yes' : 'no'}>
+                {outcome}
+              </Badge>
+            ))
+          )}
         </div>
       </div>
     </Card>

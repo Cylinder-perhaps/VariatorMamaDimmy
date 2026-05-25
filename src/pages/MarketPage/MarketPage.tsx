@@ -146,58 +146,69 @@ export const MarketPage = () => {
 
         {/* Right: Trade Panel */}
         <Card className={styles.tradeCard}>
-          <h3 className={styles.tradeTitle}>Торговля</h3>
-
-          <div className={styles.outcomeButtons}>
-            {currentMarket.outcomes.map((outcome) => (
-              <Button
-                key={outcome}
-                variant={selectedOutcome === outcome ? (outcome.toLowerCase() === 'yes' ? 'yes' : 'no') : 'secondary'}
-                className={styles.outcomeBtn}
-                onClick={() => setSelectedOutcome(outcome)}
-              >
-                {outcome}
-              </Button>
-            ))}
-          </div>
-
-          <div className={styles.tradeForm}>
-            <Input
-              label="Количество акций"
-              type="number"
-              min={1}
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-            />
-
-            <div className={styles.tradeSummary}>
-              <div className={styles.tradeSummaryRow}>
-                <span>Цена за акцию</span>
-                <span className={styles.tradeSummaryValue}>{formatCurrency(price)}</span>
+          {currentMarket.status === 'RESOLVED' && currentMarket.resolved_outcome ? (
+            <>
+              <h3 className={styles.tradeTitle}>Событие завершено</h3>
+              <div className={styles.resolvedBanner}>
+                Победивший исход: <strong>{currentMarket.resolved_outcome}</strong>
               </div>
-              <div className={styles.tradeSummaryRow}>
-                <span>Стоимость</span>
-                <span className={styles.tradeSummaryValue}>{formatCurrency(cost)}</span>
-              </div>
-              <div className={styles.tradeSummaryRow}>
-                <span>Потенциальная прибыль</span>
-                <span className={`${styles.tradeSummaryValue} ${styles.profitValue}`}>
-                  +{formatCurrency(potentialProfit)}
-                </span>
-              </div>
-            </div>
+            </>
+          ) : (
+            <>
+              <h3 className={styles.tradeTitle}>Торговля</h3>
 
-            <Button
-              fullWidth
-              size="lg"
-              variant={selectedOutcome.toLowerCase() === 'yes' ? 'yes' : 'no'}
-              isLoading={isCreating}
-              disabled={currentMarket.status !== 'ACTIVE' || qty <= 0}
-              onClick={handleOrder}
-            >
-              Купить «{selectedOutcome}» за {formatCurrency(cost)}
-            </Button>
-          </div>
+              <div className={styles.outcomeButtons}>
+                {currentMarket.outcomes.map((outcome) => (
+                  <Button
+                    key={outcome}
+                    variant={selectedOutcome === outcome ? (outcome.toLowerCase() === 'yes' ? 'yes' : 'no') : 'secondary'}
+                    className={styles.outcomeBtn}
+                    onClick={() => setSelectedOutcome(outcome)}
+                  >
+                    {outcome}
+                  </Button>
+                ))}
+              </div>
+
+              <div className={styles.tradeForm}>
+                <Input
+                  label="Количество акций"
+                  type="number"
+                  min={1}
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                />
+
+                <div className={styles.tradeSummary}>
+                  <div className={styles.tradeSummaryRow}>
+                    <span>Цена за акцию</span>
+                    <span className={styles.tradeSummaryValue}>{formatCurrency(price)}</span>
+                  </div>
+                  <div className={styles.tradeSummaryRow}>
+                    <span>Стоимость</span>
+                    <span className={styles.tradeSummaryValue}>{formatCurrency(cost)}</span>
+                  </div>
+                  <div className={styles.tradeSummaryRow}>
+                    <span>Потенциальная прибыль</span>
+                    <span className={`${styles.tradeSummaryValue} ${styles.profitValue}`}>
+                      +{formatCurrency(potentialProfit)}
+                    </span>
+                  </div>
+                </div>
+
+                <Button
+                  fullWidth
+                  size="lg"
+                  variant={selectedOutcome.toLowerCase() === 'yes' ? 'yes' : 'no'}
+                  isLoading={isCreating}
+                  disabled={currentMarket.status !== 'ACTIVE' || qty <= 0}
+                  onClick={handleOrder}
+                >
+                  Купить «{selectedOutcome}» за {formatCurrency(cost)}
+                </Button>
+              </div>
+            </>
+          )}
         </Card>
 
         {/* Resolve Market Block (Admin/Moderator) */}
