@@ -160,6 +160,17 @@ export interface ResolveMarketResponse {
   resolved_at: string;
 }
 
+// ===== Admin: Users =====
+
+export interface UpdateUserRoleRequest {
+  role: 'user' | 'moderator';
+}
+
+export interface UsersResponse {
+  data: User[];
+  meta: PaginationMeta;
+}
+
 // ===== Filters =====
 
 export interface MarketsFilter {

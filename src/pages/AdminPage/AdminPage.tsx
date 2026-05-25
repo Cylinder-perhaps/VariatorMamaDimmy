@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 
+import { useAuthStore } from '@entities/user/model/store';
 import { adminApi } from '@shared/api';
 import { Button, Input } from '@shared/ui';
+import type { User } from '@shared/types';
 
 import styles from './AdminPage.module.css';
 
@@ -14,10 +16,22 @@ interface CreateMarketFormData {
   outcomes: { value: string }[];
 }
 
+type TabType = 'markets' | 'users';
+
 export const AdminPage = () => {
+  const { user: currentUser } = useAuthStore();
+  const [activeTab, setActiveTab] = useState<TabType>('markets');
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+
+  // Users Tab State
+  const [users, setUsers] = useState<User[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isUsersLoading, setIsUsersLoading] = useState(false);
+  const [usersError, setUsersError] = useState<string | null>(null);
 
   const {
     register,
@@ -77,13 +91,66 @@ export const AdminPage = () => {
     }
   };
 
+  const fetchUsers = async (targetPage: number) => {
+    try {
+      setIsUsersLoading(true);
+      setUsersError(null);
+      const { data } = await adminApi.listUsers({ page: targetPage, per_page: 20 });
+      setUsers(data.data);
+      setTotalPages(data.meta.pages);
+    } catch (err: any) {
+      setUsersError(err?.response?.data?.error?.message || 'Ошибка загрузки пользователей');
+    } finally {
+      setIsUsersLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'users' && currentUser?.role === 'admin') {
+      fetchUsers(page);
+    }
+  }, [activeTab, page, currentUser?.role]);
+
+  const handleRoleChange = async (userId: string, newRole: 'user' | 'moderator') => {
+    try {
+      await adminApi.updateUserRole(userId, { role: newRole });
+      fetchUsers(page); // Reload to get updated data
+    } catch (err: any) {
+      alert(err?.response?.data?.error?.message || 'Ошибка обновления роли');
+    }
+  };
+
+  const getRoleBadgeClass = (role: string) => {
+    if (role === 'admin') return styles.roleAdmin;
+    if (role === 'moderator') return styles.roleModerator;
+    return styles.roleUser;
+  };
+
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Админ-панель: Создание рынка</h1>
+      <h1 className={styles.title}>Админ-панель</h1>
 
-      <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-        {error && <div className={styles.formError}>{error}</div>}
-        {success && <div className={styles.formSuccess}>Рынок успешно создан!</div>}
+      {currentUser?.role === 'admin' && (
+        <div className={styles.tabs}>
+          <button 
+            className={`${styles.tab} ${activeTab === 'markets' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('markets')}
+          >
+            Создание рынка
+          </button>
+          <button 
+            className={`${styles.tab} ${activeTab === 'users' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('users')}
+          >
+            Пользователи
+          </button>
+        </div>
+      )}
+
+      {activeTab === 'markets' && (
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+          {error && <div className={styles.formError}>{error}</div>}
+          {success && <div className={styles.formSuccess}>Рынок успешно создан!</div>}
 
         <Input
           label="Название события"
@@ -142,10 +209,81 @@ export const AdminPage = () => {
           </Button>
         </div>
 
-        <Button type="submit" isLoading={isLoading} fullWidth size="lg">
-          Создать рынок
-        </Button>
-      </form>
+          <Button type="submit" isLoading={isLoading} fullWidth size="lg">
+            Создать рынок
+          </Button>
+        </form>
+      )}
+
+      {activeTab === 'users' && currentUser?.role === 'admin' && (
+        <div className={styles.usersContainer}>
+          {usersError && <div className={styles.error}>{usersError}</div>}
+          
+          {isUsersLoading ? (
+            <div className={styles.loading}>Загрузка...</div>
+          ) : (
+            <>
+              <table className={styles.usersTable}>
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Текущая роль</th>
+                    <th>Действие</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.email}</td>
+                      <td>
+                        <span className={`${styles.roleBadge} ${getRoleBadgeClass(user.role)}`}>
+                          {user.role}
+                        </span>
+                      </td>
+                      <td>
+                        <select
+                          className={styles.roleSelect}
+                          value={user.role}
+                          disabled={user.role === 'admin' || user.id === currentUser.id}
+                          onChange={(e) => handleRoleChange(user.id, e.target.value as 'user' | 'moderator')}
+                        >
+                          <option value="user">User</option>
+                          <option value="moderator">Moderator</option>
+                          {user.role === 'admin' && <option value="admin">Admin</option>}
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {totalPages > 1 && (
+                <div className={styles.pagination}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  >
+                    Назад
+                  </Button>
+                  <span className={styles.pageInfo}>
+                    Страница {page} из {totalPages}
+                  </span>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={page === totalPages}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  >
+                    Вперед
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };
