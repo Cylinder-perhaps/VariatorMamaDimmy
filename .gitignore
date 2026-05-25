@@ -43,3 +43,6 @@ sketch
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+.env
+build
