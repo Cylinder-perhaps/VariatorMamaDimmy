@@ -41,13 +41,20 @@
 
     /* Path Mappings*/
     "paths": {
-      "@api/*": ["api/*"]
+      "@app/*": ["app/*"],
+      "@pages/*": ["pages/*"],
+      "@widgets/*": ["widgets/*"],
+      "@features/*": ["features/*"],
+      "@entities/*": ["entities/*"],
+      "@shared/*": ["shared/*"],
+      "@api/*": ["shared/api/*"]
     }
   },
   "include": [
     "src/**/*",
     "vite.config.ts",
-    "**/*.json"
-, "build-tokens.js"  ],
+    "**/*.json",
+    "build-tokens.js"
+  ],
   "exclude": ["node_modules", "build"]
 }

@@ -1,0 +1,49 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-full);
+  line-height: var(--line-height-normal);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.active {
+  background: var(--color-status-success-bg);
+  color: var(--color-status-success);
+}
+.closed {
+  background: var(--color-status-warning-bg);
+  color: var(--color-status-warning);
+}
+.resolved {
+  background: var(--color-status-info-bg);
+  color: var(--color-status-info);
+}
+.yes {
+  background: var(--color-yes-bg);
+  color: var(--color-yes);
+}
+.no {
+  background: var(--color-no-bg);
+  color: var(--color-no);
+}
+.pending {
+  background: var(--color-status-warning-bg);
+  color: var(--color-status-warning);
+}
+.filled {
+  background: var(--color-status-success-bg);
+  color: var(--color-status-success);
+}
+.cancelled {
+  background: var(--color-bg-element);
+  color: var(--color-text-tertiary);
+}
+.default {
+  background: var(--color-bg-element);
+  color: var(--color-text-secondary);
+}

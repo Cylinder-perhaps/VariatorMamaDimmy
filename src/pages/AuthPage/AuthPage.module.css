@@ -1,0 +1,53 @@
+.page {
+  max-width: 440px;
+  margin: var(--space-10) auto;
+  animation: fadeInUp 0.3s ease;
+}
+
+.card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-main);
+  border-radius: var(--radius-modal);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-elevated);
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+}
+
+.subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.error {
+  padding: var(--space-3);
+  background: var(--color-status-error-bg);
+  border: 1px solid var(--color-status-error);
+  border-radius: var(--radius-input);
+  color: var(--color-status-error);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.tabs {
+  margin-bottom: var(--space-6);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}

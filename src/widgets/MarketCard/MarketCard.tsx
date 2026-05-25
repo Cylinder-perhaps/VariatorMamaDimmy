@@ -1,0 +1,51 @@
+import { useNavigate } from 'react-router-dom';
+
+import { formatRelativeTime } from '@shared/lib/format';
+import type { Market } from '@shared/types';
+import { Badge, Card, ProgressBar, marketStatusVariant } from '@shared/ui';
+
+import styles from './MarketCard.module.css';
+
+interface MarketCardProps {
+  market: Market;
+}
+
+export const MarketCard = ({ market }: MarketCardProps) => {
+  const navigate = useNavigate();
+
+  // Для демо — используем случайную вероятность на основе id
+  const hashCode = market.id.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  const yesPercent = (hashCode % 80) + 10; // 10-90%
+
+  return (
+    <Card hoverable className={styles.card} onClick={() => navigate(`/markets/${market.id}`)}>
+      <div className={styles.header}>
+        <h3 className={styles.title}>{market.title}</h3>
+        <Badge variant={marketStatusVariant[market.status] || 'default'}>
+          {market.status}
+        </Badge>
+      </div>
+
+      {market.description && (
+        <p className={styles.description}>{market.description}</p>
+      )}
+
+      <div className={styles.progress}>
+        <ProgressBar yesPercent={yesPercent} />
+      </div>
+
+      <div className={styles.footer}>
+        <span className={styles.deadline}>
+          ⏰ {formatRelativeTime(market.deadline)}
+        </span>
+        <div className={styles.outcomes}>
+          {market.outcomes.map((outcome) => (
+            <Badge key={outcome} variant={outcome.toLowerCase() === 'yes' ? 'yes' : 'no'}>
+              {outcome}
+            </Badge>
+          ))}
+        </div>
+      </div>
+    </Card>
+  );
+};

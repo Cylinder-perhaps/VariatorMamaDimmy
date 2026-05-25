@@ -1,0 +1,38 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.yesLabel { color: var(--color-yes); }
+.noLabel { color: var(--color-no); }
+
+.track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: var(--color-no-bg);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--color-yes);
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
+}
+
+.trackLg {
+  height: 12px;
+}
