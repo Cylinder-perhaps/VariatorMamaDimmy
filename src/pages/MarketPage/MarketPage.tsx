@@ -50,11 +50,22 @@ export const MarketPage = () => {
     );
   }
 
-  // Цена для MVP считается как 1 / количество исходов
+  // Цена для MVP (стоимость 1 акции)
   const price = currentMarket.outcomes.length > 0 ? 1 / currentMarket.outcomes.length : 0.5;
   const qty = parseInt(quantity) || 0;
   const cost = qty * price;
-  const potentialProfit = qty * (1 - price);
+
+  // Parimutuel: расчет пулов и ожидаемой прибыли
+  const pools = currentMarket.pools || {};
+  const currentTotalPool = Object.values(pools).reduce((acc, val) => acc + val, 0);
+  const currentOutcomePool = pools[selectedOutcome] || 0;
+
+  const newTotalPool = currentTotalPool + cost;
+  const newOutcomePool = currentOutcomePool + cost;
+
+  // Ожидаемая выплата: (моя ставка / общий пул победителей) * общий пул
+  const expectedPayout = newOutcomePool > 0 ? (cost / newOutcomePool) * newTotalPool : 0;
+  const potentialProfit = Math.max(0, expectedPayout - cost);
 
   const handleOrder = async () => {
     if (!isAuthenticated) {
@@ -122,7 +133,24 @@ export const MarketPage = () => {
       <div className={styles.content}>
         {/* Left: Probability + Details */}
         <div>
-          {/* Место для будущего графика цен */}
+          <Card className={styles.poolsCard}>
+            <h3 className={styles.poolsTitle}>Текущий пул (Parimutuel)</h3>
+            <p className={styles.poolsDesc}>
+              Ваша итоговая прибыль зависит от финального размера пула.
+            </p>
+            <div className={styles.poolsList}>
+              {currentMarket.outcomes.map(outcome => (
+                <div key={outcome} className={styles.poolItem}>
+                  <span>{outcome}</span>
+                  <strong>{formatCurrency(pools[outcome] || 0)}</strong>
+                </div>
+              ))}
+              <div className={styles.poolTotal}>
+                <span>Всего в пуле:</span>
+                <strong>{formatCurrency(currentTotalPool)}</strong>
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Right: Trade Panel */}
@@ -162,15 +190,15 @@ export const MarketPage = () => {
 
                 <div className={styles.tradeSummary}>
                   <div className={styles.tradeSummaryRow}>
-                    <span>Цена за акцию</span>
-                    <span className={styles.tradeSummaryValue}>{formatCurrency(price)}</span>
-                  </div>
-                  <div className={styles.tradeSummaryRow}>
-                    <span>Стоимость</span>
+                    <span>Ставка (стоимость)</span>
                     <span className={styles.tradeSummaryValue}>{formatCurrency(cost)}</span>
                   </div>
                   <div className={styles.tradeSummaryRow}>
-                    <span>Потенциальная прибыль</span>
+                    <span>Ожидаемая выплата</span>
+                    <span className={styles.tradeSummaryValue}>{formatCurrency(expectedPayout)}</span>
+                  </div>
+                  <div className={styles.tradeSummaryRow}>
+                    <span>Ожидаемая чистая прибыль</span>
                     <span className={`${styles.tradeSummaryValue} ${styles.profitValue}`}>
                       +{formatCurrency(potentialProfit)}
                     </span>
@@ -185,7 +213,7 @@ export const MarketPage = () => {
                   disabled={currentMarket.status !== 'ACTIVE' || qty <= 0}
                   onClick={handleOrder}
                 >
-                  Купить «{selectedOutcome}» за {formatCurrency(cost)}
+                  Купить «{selectedOutcome}»
                 </Button>
               </div>
             </>

@@ -45,6 +45,7 @@ export interface Market {
   resolved_outcome: string | null;
   created_at: string;
   created_by: string;
+  pools?: Record<string, number>;
 }
 
 export interface CreateMarketRequest {
