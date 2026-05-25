@@ -6,6 +6,7 @@ import { HomePage } from '@pages/HomePage';
 import { MarketPage } from '@pages/MarketPage';
 import { NotFoundPage } from '@pages/NotFoundPage';
 import { PortfolioPage } from '@pages/PortfolioPage';
+import { AdminPage } from '@pages/AdminPage';
 import { useAuthStore } from '@entities/user/model/store';
 
 import type { ReactNode } from 'react';
@@ -15,6 +16,20 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/auth" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+const AdminRoute = ({ children }: { children: ReactNode }) => {
+  const { isAuthenticated, user } = useAuthStore();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
+  
+  if (user?.role !== 'admin' && user?.role !== 'moderator') {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -34,6 +49,14 @@ export const AppRouter = () => {
               <ProtectedRoute>
                 <PortfolioPage />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminPage />
+              </AdminRoute>
             }
           />
           <Route path="/404" element={<NotFoundPage />} />

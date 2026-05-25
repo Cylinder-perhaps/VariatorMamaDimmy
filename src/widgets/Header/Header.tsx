@@ -47,6 +47,11 @@ export const Header = () => {
                 Портфель
               </NavLink>
             )}
+            {isAuthenticated && (user?.role === 'admin' || user?.role === 'moderator') && (
+              <NavLink to="/admin" className={navLinkClass}>
+                Админ-панель
+              </NavLink>
+            )}
           </nav>
         </div>
 

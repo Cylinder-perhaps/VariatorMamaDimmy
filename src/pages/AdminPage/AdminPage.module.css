@@ -1,0 +1,70 @@
+.page {
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.title {
+  margin-bottom: 30px;
+  font-size: 2rem;
+  color: var(--text-primary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: var(--bg-card);
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.outcomes {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.outcomesTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.outcomeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.outcomeRow > div {
+  flex: 1;
+}
+
+.removeBtn {
+  margin-top: 24px;
+}
+
+.error {
+  color: var(--danger-color);
+  font-size: 0.9rem;
+  margin-top: -10px;
+}
+
+.formError {
+  padding: 15px;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.formSuccess {
+  padding: 15px;
+  background-color: rgba(34, 197, 94, 0.1);
+  color: var(--success-color);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
