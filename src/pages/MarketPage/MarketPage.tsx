@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useMarketsStore } from '@entities/market/model/store';
 import { useOrdersStore } from '@entities/order/model/store';
 import { useAuthStore } from '@entities/user/model/store';
+import { adminApi } from '@shared/api';
 import { formatCurrency, formatDate, formatRelativeTime } from '@shared/lib/format';
 import { Badge, Button, Card, Input, ProgressBar, Spinner, marketStatusVariant, toast } from '@shared/ui';
 
@@ -14,10 +15,15 @@ export const MarketPage = () => {
   const navigate = useNavigate();
   const { currentMarket, isLoadingDetails, fetchMarketById } = useMarketsStore();
   const { createOrder, isCreating } = useOrdersStore();
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { isAuthenticated, user } = useAuthStore();
 
   const [selectedOutcome, setSelectedOutcome] = useState<string>('');
   const [quantity, setQuantity] = useState<string>('10');
+
+  // Admin / Moderator resolve state
+  const [resolveOutcome, setResolveOutcome] = useState<string>('');
+  const [evidenceUrl, setEvidenceUrl] = useState<string>('');
+  const [isResolving, setIsResolving] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -26,10 +32,11 @@ export const MarketPage = () => {
   }, [id, fetchMarketById]);
 
   useEffect(() => {
-    if (currentMarket?.outcomes?.[0] && !selectedOutcome) {
-      setSelectedOutcome(currentMarket.outcomes[0]);
+    if (currentMarket?.outcomes?.[0]) {
+      if (!selectedOutcome) setSelectedOutcome(currentMarket.outcomes[0]);
+      if (!resolveOutcome) setResolveOutcome(currentMarket.outcomes[0]);
     }
-  }, [currentMarket, selectedOutcome]);
+  }, [currentMarket, selectedOutcome, resolveOutcome]);
 
   if (isLoadingDetails) {
     return <Spinner centered size="lg" />;
@@ -72,6 +79,23 @@ export const MarketPage = () => {
       setQuantity('10');
     } catch {
       toast.error('Не удалось создать ордер');
+    }
+  };
+
+  const handleResolve = async () => {
+    if (!id || !resolveOutcome) return;
+    try {
+      setIsResolving(true);
+      await adminApi.resolveMarket(id, {
+        winning_outcome: resolveOutcome,
+        evidence_url: evidenceUrl || null,
+      });
+      toast.success(`Рынок завершён. Исход: ${resolveOutcome}`);
+      void fetchMarketById(id);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error?.message || 'Ошибка разрешения рынка');
+    } finally {
+      setIsResolving(false);
     }
   };
 
@@ -175,6 +199,41 @@ export const MarketPage = () => {
             </Button>
           </div>
         </Card>
+
+        {/* Resolve Market Block (Admin/Moderator) */}
+        {isAuthenticated && (user?.role === 'admin' || user?.role === 'moderator') && currentMarket.status === 'ACTIVE' && (
+          <Card className={styles.resolveCard}>
+            <h3 className={styles.resolveTitle}>Завершение события (Admin)</h3>
+            <div className={styles.resolveForm}>
+              <select
+                className={styles.resolveSelect}
+                value={resolveOutcome}
+                onChange={(e) => setResolveOutcome(e.target.value)}
+              >
+                {currentMarket.outcomes.map((outcome) => (
+                  <option key={outcome} value={outcome}>
+                    {outcome}
+                  </option>
+                ))}
+              </select>
+              <Input
+                label="Доказательство (опционально, URL)"
+                placeholder="https://..."
+                value={evidenceUrl}
+                onChange={(e) => setEvidenceUrl(e.target.value)}
+              />
+              <Button
+                fullWidth
+                size="md"
+                variant="danger"
+                isLoading={isResolving}
+                onClick={handleResolve}
+              >
+                Завершить событие
+              </Button>
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );
