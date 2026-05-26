@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { fileURLToPath } from 'url';
 
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
@@ -37,6 +38,18 @@ export default defineConfig(({ mode }) => {
       modulePreload: false,
       outDir: 'build',
       assetsDir: '',
+    },
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: './vitest.setup.ts',
+      css: false,
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'html'],
+        include: ['src/**/*.{ts,tsx}'],
+        exclude: ['src/**/*.test.{ts,tsx}', 'src/main.tsx', 'src/vite-env.d.ts', 'src/shared/types/**/*'],
+      },
     },
     resolve: {
       alias: [
