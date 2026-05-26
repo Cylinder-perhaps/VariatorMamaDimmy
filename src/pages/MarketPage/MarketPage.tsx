@@ -55,17 +55,9 @@ export const MarketPage = () => {
   const qty = parseInt(quantity) || 0;
   const cost = qty * price;
 
-  // Parimutuel: расчет пулов и ожидаемой прибыли
-  const pools = currentMarket.pools || {};
-  const currentTotalPool = Object.values(pools).reduce((acc, val) => acc + val, 0);
-  const currentOutcomePool = pools[selectedOutcome] || 0;
 
-  const newTotalPool = currentTotalPool + cost;
-  const newOutcomePool = currentOutcomePool + cost;
 
-  // Ожидаемая выплата: (моя ставка / общий пул победителей) * общий пул
-  const expectedPayout = newOutcomePool > 0 ? (cost / newOutcomePool) * newTotalPool : 0;
-  const potentialProfit = Math.max(0, expectedPayout - cost);
+
 
   const handleOrder = async () => {
     if (!isAuthenticated) {
@@ -131,27 +123,7 @@ export const MarketPage = () => {
       </div>
 
       <div className={styles.content}>
-        {/* Left: Probability + Details */}
-        <div>
-          <Card className={styles.poolsCard}>
-            <h3 className={styles.poolsTitle}>Текущий пул (Parimutuel)</h3>
-            <p className={styles.poolsDesc}>
-              Ваша итоговая прибыль зависит от финального размера пула.
-            </p>
-            <div className={styles.poolsList}>
-              {currentMarket.outcomes.map(outcome => (
-                <div key={outcome} className={styles.poolItem}>
-                  <span>{outcome}</span>
-                  <strong>{formatCurrency(pools[outcome] || 0)}</strong>
-                </div>
-              ))}
-              <div className={styles.poolTotal}>
-                <span>Всего в пуле:</span>
-                <strong>{formatCurrency(currentTotalPool)}</strong>
-              </div>
-            </div>
-          </Card>
-        </div>
+
 
         {/* Right: Trade Panel */}
         <Card className={styles.tradeCard}>
@@ -193,16 +165,7 @@ export const MarketPage = () => {
                     <span>Ставка (стоимость)</span>
                     <span className={styles.tradeSummaryValue}>{formatCurrency(cost)}</span>
                   </div>
-                  <div className={styles.tradeSummaryRow}>
-                    <span>Ожидаемая выплата</span>
-                    <span className={styles.tradeSummaryValue}>{formatCurrency(expectedPayout)}</span>
-                  </div>
-                  <div className={styles.tradeSummaryRow}>
-                    <span>Ожидаемая чистая прибыль</span>
-                    <span className={`${styles.tradeSummaryValue} ${styles.profitValue}`}>
-                      +{formatCurrency(potentialProfit)}
-                    </span>
-                  </div>
+
                 </div>
 
                 <Button
